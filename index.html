@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Magic Maze Board</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div id="start-popup" class="start-popup">
+        <button id="play-btn">Play!</button>
+    </div>
+    <div id="selection-container"></div>
+    <div class="game-container">
+        <div id="board-container">
+            <!-- Board and Messages will be injected here -->
+        </div>
+        <div id="compass-container" class="hidden"></div>
+    </div>
+
+    <script src="js/Constants.js"></script>
+    <script src="js/Messages.js"></script>
+    <script src="js/AudioManager.js"></script>
+    <script src="js/Narrator.js"></script>
+    <script src="js/models/Language.js"></script>
+    <script src="js/models/Difficulty.js"></script>
+    <script src="js/models/Wall.js"></script>
+    <script src="js/models/Tile.js"></script>
+    <script src="js/models/Player.js"></script>
+    <script src="js/models/WallGenerator.js"></script>
+    <script src="js/models/Direction.js"></script>
+    <script src="js/models/Ghost.js"></script>
+    <script src="js/models/DoorHint.js"></script>
+    <script src="js/models/GhostHint.js"></script>
+    <script src="js/models/Board.js"></script>
+    <script src="js/models/Game.js"></script>
+    <script src="js/models/GameState.js"></script>
+    <script src="js/views/SelectionView.js"></script>
+    <script src="js/views/BoardView.js"></script>
+    <script src="js/views/MagicCompassView.js"></script>
+    <script src="js/controllers/GameController.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>
