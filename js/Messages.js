@@ -2,7 +2,10 @@ const Messages = {
     en: {
         /* Game Intro */
         play: "Play!",
-        game_intro: "Hubi has stolen the carrots and cheeses! ",
+        language_label: "Language",
+        difficulty_label: "Difficulty",
+        game_intro: "Hmmm, so tasty all these carrots and cheeses that I'll eat!",
+        game_intro_2: "Hubi has stolen your food and taken them to the haunted house. Find the magic door and open it to wake him up and recover your food!",
 
         /* Players Selection */
         player_selection_intro: "Select the players that will be playing this game. " +
@@ -88,7 +91,10 @@ const Messages = {
     es: {
         /* Game Intro */
         play: "¡Jugar!",
-        game_intro: "¡Hubi ha robado las zanahorias y quesos!",
+        language_label: "Idioma",
+        difficulty_label: "Dificultad",
+        game_intro: "Hmmm, ¡qué rico todas estas zanahorias y quesos que voy a comer!",
+        game_intro_2: "Hubi ha robado tu comida y la ha llevado a su casa embrujada. Encuentra la puerta mágica y abrela para despertar a Hubi y recuperar tu comida!",
 
         /* Players Selection */
         player_selection_intro: "Selecciona los jugadores que participarán en esta partida. " +
@@ -104,7 +110,7 @@ const Messages = {
         first_player_must_be_in_game: "El primer jugador debe estar en la partida.",
 
         /* Moves */
-        ask_where_to: "Querido {0}, ¿en qué dirección te gustaría moverte?",
+        ask_where_to: "Querido {0}, ¿En qué dirección te gustaría moverte?",
         invalid_move_diagonal: "Movimiento inválido. Solo puedes moverte diagonalmente.",
         bonus_move: "¡Ya lo sabes! Tienes un movimiento extra.",
 

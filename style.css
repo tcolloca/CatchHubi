@@ -685,9 +685,46 @@ Assuming 2x2 grid for animals-row-2:
     height: 100vh;
     background: rgba(0, 0, 0, 0.9);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    gap: 20px;
     z-index: 2000;
+}
+
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: white;
+}
+
+.settings-group label {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #FFC107;
+}
+
+.settings-group select {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    background: #333;
+    color: white;
+    border: 2px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 200px;
+}
+
+.settings-group select:hover {
+    border-color: #FFC107;
+}
+
+.settings-group select:focus {
+    outline: none;
+    border-color: #FFC107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
 }
 
 .start-popup.hidden {

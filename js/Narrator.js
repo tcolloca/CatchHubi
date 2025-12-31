@@ -13,6 +13,9 @@ class Narrator {
         await this._playSequence('hubi', [
             'game_intro.m4a',
         ], 'game_intro');
+        await this._playSequence('host', [
+            'game_intro_2.m4a',
+        ], 'game_intro_2');
         await this.selectPlayers();
     }
 
