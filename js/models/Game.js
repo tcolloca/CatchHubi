@@ -78,6 +78,7 @@ class Game {
         await this.narrator.announceWall(creature, wall);
         const isKnownWall = wall.isRevealed;
         wall.reveal();
+        let wasGhostAlreadyActive = this.ghost.active;
 
         if (wall.type === WallType.MAGIC_DOOR && !wall.isOpen) {
             if (await this.gameState.tryOpenDoor(wall)) {
@@ -101,7 +102,9 @@ class Game {
             await this.narrator.cannotPassThrough(creature);
         }
 
-        if (this.ghost.active) {
+        if (hasMoved && this.ghost.active && player.row === this.ghost.row && player.col === this.ghost.col) {
+            await this.narrator.hubiFoundByOnePlayer();
+        } else if (wasGhostAlreadyActive) {
             if (await this.ghost.maybeMove()) {
                 this.givenHints = new Map();
             }

@@ -92,13 +92,18 @@ class Narrator {
         ], 'invalid_mode_diagonal');
     }
 
-    async magicDoorOpened(creature) {
+    async magicDoorOpened(creature, isFirstDoor) {
         await this._playSequence('sfx', [
             'open_door.m4a',
         ]);
         await this._playSequence(creature.type, [
             'magic_door_opened.m4a',
         ], 'magic_door_opened');
+        if (isFirstDoor) {
+            await this._playSequence('hubi', [
+                'hubi_awake.m4a',
+            ], 'hubi_awake');
+        }
     }
 
     async announceWall(creature, wall) {
@@ -160,8 +165,23 @@ class Narrator {
             'ghost.m4a',
         ]);
         await this._playSequence('hubi', [
+            'hubi_moved.m4a',
+        ], 'hubi_moved');
+        await this._playSequence('host', [
             'ghost_moved.m4a',
         ], 'ghost_moved');
+    }
+
+    async hubiFoundByOnePlayer() {
+        await this._playSequence('hubi', [
+            'hubi_found_by_one_player.m4a',
+        ], 'hubi_found_by_one_player');
+    }
+
+    async hubiFoundByTwoPlayers() {
+        await this._playSequence('hubi', [
+            'hubi_found_by_two_players.m4a',
+        ], 'hubi_found_by_two_players');
     }
 
     async bonusMove(creature) {
@@ -178,6 +198,7 @@ class Narrator {
     }
 
     async gameWon() {
+        await this.hubiFoundByTwoPlayers();
         await this._playSequence('music', [
             'game_win.m4a',
         ]);
@@ -202,7 +223,6 @@ class Narrator {
             this._waitingForMessage--;
         }
         this._interrupted = false;
-        console.log('resetting interrupted');
         const success = await this.audioManager.playSequence(source, filesSequence);
 
         if (!success && labelId) {
@@ -245,7 +265,6 @@ class Narrator {
         let interrupted = false;
         let waitingForAudios = 0;
         if (this.audioManager.stopAll()) {
-            console.log('audio interrupted');
             interrupted = true;
             waitingForAudios = this.audioManager.waitingForAudios;
         }
@@ -270,7 +289,6 @@ class Narrator {
             this._resolveInterruption = null;
         }
         this._messagePromise = null;
-        console.log(interrupted && (this._waitingForMessage > 0 || waitingForAudios > 0));
         return interrupted && (this._waitingForMessage > 0 || waitingForAudios > 0);
     }
 

@@ -61,7 +61,6 @@ class AudioManager {
             this.interrupted = true;
             this.currentAudio.pause();
             this.currentAudio.onended();
-            this.currentAudio.currentTime = 0;
             this.currentAudio = null;
             return true && this.waitingForAudios > 0;
         }

@@ -79,8 +79,11 @@ const Messages = {
         player_position: "{0} is in a room with {1} closer to {2} on the {3} room.",
 
         /* Ghost */
-        ghost_moved: "Ghost moved.",
-        ghost_moved_to: "Ghost moved to {0}.",
+        hubi_awake: "Huh... What's that sound that has just woke me up?",
+        hubi_moved: "Haha! You'll never catch me!",
+        ghost_moved: "Hubi has changed rooms, hurry to find him!",
+        hubi_found_by_one_player: "Oh, no! You've found me! But you need another player to catch me!",
+        hubi_found_by_two_players: "!Oh, no! You've caught me! You can take your food, I've had fun too!",
 
         /* Game Won */
         game_won: "You've won!",
@@ -168,8 +171,11 @@ const Messages = {
         player_position: "{0} está en una habitación con {1} cercano a {2} en la habitación {3}.",
 
         /* Ghost */
-        ghost_moved: "El fantasma se ha movido.",
-        ghost_moved_to: "El fantasma se movió a {0}.",
+        hubi_awake: "Uhh, ¿Qué es ese ruido que me ha despertado?",
+        hubi_moved: "Ha! Nunca me atraparás!",
+        ghost_moved: "Hubi se ha movido a otra habitación, ¡Apúrate para encontrarlo!",
+        hubi_found_by_one_player: "¡Oh, no! ¡Me has encontrado! ¡Pero necesitas a alguien mas para atraparme!",
+        hubi_found_by_two_players: "¡Oh, no! ¡Me han atrapado! Tomen su comida, me he divertido much igual.",
 
         /* Game Won */
         game_won: "¡Han ganado!",

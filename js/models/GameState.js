@@ -43,8 +43,8 @@ class GameState {
         if (this.game.getPlayersAt(tiles[0].row, tiles[0].col).length >= 1
             && this.game.getPlayersAt(tiles[1].row, tiles[1].col).length >= 1) {
             door.open();
-            await this.narrator.magicDoorOpened(this.game.board.getCreature(this.game.currentPlayer));
-            if (this.currentState === GameStates.PLAYING_BEFORE_DOOR) {
+            await this.narrator.magicDoorOpened(this.game.board.getCreature(this.game.currentPlayer), !this.isHubiAwake());
+            if (!this.isHubiAwake()) {
                 this.currentState = GameStates.PLAYING_WITH_HUBI;
                 await this.game.spawnGhost();
             }

@@ -271,7 +271,6 @@ class GameController {
     }
 
     async _handleHelpPress() {
-        console.log("Help Pressed");
     }
 
     _onInterruption() {
