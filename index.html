@@ -9,17 +9,6 @@
 </head>
 
 <body>
-    <div id="start-popup" class="start-popup">
-        <button id="play-btn">Play!</button>
-    </div>
-    <div id="selection-container"></div>
-    <div class="game-container">
-        <div id="board-container">
-            <!-- Board and Messages will be injected here -->
-        </div>
-        <div id="compass-container" class="hidden"></div>
-    </div>
-
     <script src="js/Constants.js"></script>
     <script src="js/Messages.js"></script>
     <script src="js/AudioManager.js"></script>
@@ -42,6 +31,18 @@
     <script src="js/views/MagicCompassView.js"></script>
     <script src="js/controllers/GameController.js"></script>
     <script src="js/main.js"></script>
+
+    <div id="start-popup" class="start-popup">
+        <button id="play-btn"></button>
+    </div>
+    <div id="selection-container"></div>
+    <div class="game-container">
+        <div id="board-container">
+            <!-- Board and Messages will be injected here -->
+        </div>
+        <div id="compass-container" class="hidden"></div>
+        <div id="narrator-message-container" class="narrator-message-container"></div>
+    </div>
 </body>
 
 </html>

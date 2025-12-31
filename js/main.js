@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     controller.init();
 
     const playBtn = document.getElementById('play-btn');
+    playBtn.textContent = Messages[language].play;
     if (playBtn) {
         playBtn.addEventListener('click', async () => {
             await controller.start();

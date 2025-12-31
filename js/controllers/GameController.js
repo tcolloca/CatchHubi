@@ -183,6 +183,9 @@ class GameController {
     }
 
     async _handlePlayerClick(playerInfo) {
+        if (this._onInterruption()) {
+            return;
+        }
         if (this.gameState.is(GameStates.SELECTING_PLAYERS)) {
             await this._handleSelectPlayer(playerInfo);
             return;
@@ -194,7 +197,6 @@ class GameController {
         }
 
         if (this.gameState.isPlaying()) {
-            console.log(playerInfo);
             await this.game.givePlayerPosition(playerInfo);
             return;
         }
@@ -230,6 +232,9 @@ class GameController {
     }
 
     async _handleDirectionClick(direction) {
+        if (this._onInterruption()) {
+            return;
+        }
         if (!this.gameState.isPlaying()) {
             this.narrator.selectPlayers();
             return;
@@ -243,6 +248,9 @@ class GameController {
     }
 
     async _handleHelpClick() {
+        if (this._onInterruption()) {
+            return;
+        }
         if (this.gameState.is(GameStates.SELECTING_PLAYERS)) {
             if (await this.gameState.selectFirstPlayer()) {
                 this.compassView.togglePlayerLightsOff();
@@ -264,5 +272,9 @@ class GameController {
 
     async _handleHelpPress() {
         console.log("Help Pressed");
+    }
+
+    _onInterruption() {
+        return this.narrator.interrupt();
     }
 }

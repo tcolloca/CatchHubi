@@ -43,7 +43,7 @@ class Game {
         this.ghost.spawn();
     }
 
-    moveToNextPlayer() {
+    async moveToNextPlayer() {
         if (this.currentPlayer == Player.GREEN_RABBIT) {
             this.currentPlayer = Player.RED_MOUSE;
         } else if (this.currentPlayer == Player.RED_MOUSE) {
@@ -54,9 +54,9 @@ class Game {
             this.currentPlayer = Player.GREEN_RABBIT;
         }
         if (this.hasPlayer(this.currentPlayer)) {
-            this.narrator.askWhereTo(this.board.getCreature(this.currentPlayer), this.currentPlayer);
+            await this.narrator.askWhereTo(this.board.getCreature(this.currentPlayer), this.currentPlayer);
         } else {
-            this.moveToNextPlayer();
+            await this.moveToNextPlayer();
         }
     }
 
@@ -117,7 +117,7 @@ class Game {
             }
         }
 
-        this.endTurn();
+        await this.endTurn();
     }
 
     canPass(wall, player) {
@@ -185,9 +185,9 @@ class Game {
         await this.narrator.givePlayerPosition(player, creature, owl, color);
     }
 
-    endTurn() {
+    async endTurn() {
         this.movesMade = 0;
-        this.moveToNextPlayer();
+        await this.moveToNextPlayer();
     }
 
     isOver() {

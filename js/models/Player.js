@@ -19,7 +19,7 @@ class Player {
     constructor(color, type) {
         this.color = color; // PlayerColor
         this.type = type; // PlayerType
-        this.name = this.capitalize(color) + ' ' + this.capitalize(type);
+        this.name = `${color}_${type}`;
         this.row = -1;
         this.col = -1;
 

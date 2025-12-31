@@ -1,6 +1,7 @@
 const Messages = {
     en: {
         /* Game Intro */
+        play: "Play!",
         game_intro: "Hubi has stolen the carrots and cheeses! ",
 
         /* Players Selection */
@@ -38,12 +39,14 @@ const Messages = {
         cannot_pass_through: "You cannot pass through.",
 
         /* Players */
-        green_rabbit: "the green rabbit",
-        red_mouse: "the red mouse",
-        yellow_mouse: "the yellow mouse",
-        blue_rabbit: "the blue rabbit",
+        green_rabbit: "green rabbit",
+        red_mouse: "red mouse",
+        yellow_mouse: "yellow mouse",
+        blue_rabbit: "blue rabbit",
 
         /* Creatures */
+        host: "host",
+        hubi: "hubi",
         owl: "an owl",
         frog: "a frog",
         millipede: "a millipede",
@@ -58,6 +61,12 @@ const Messages = {
         white_millipede: "a white millipede",
         black_bat: "a black bat",
         white_bat: "a white bat",
+
+        /* Room colors*/
+        green: "green",
+        red: "red",
+        yellow: "yellow",
+        blue: "blue",
 
         /* Hints */
         ghost_hint: "Hubi is in a room with {0}.",
@@ -78,6 +87,7 @@ const Messages = {
     },
     es: {
         /* Game Intro */
+        play: "¡Jugar!",
         game_intro: "¡Hubi ha robado las zanahorias y quesos!",
 
         /* Players Selection */
@@ -115,15 +125,17 @@ const Messages = {
         cannot_pass_through: "No puedes pasar.",
 
         /* Players */
-        green_rabbit: "el conejo verde",
-        red_mouse: "el ratón rojo",
-        yellow_mouse: "el ratón amarillo",
-        blue_rabbit: "el conejo azul",
+        green_rabbit: "conejo verde",
+        red_mouse: "ratón rojo",
+        yellow_mouse: "ratón amarillo",
+        blue_rabbit: "conejo azul",
 
         /* Creatures */
+        host: "anfitrión",
+        hubi: "hubi",
         owl: "un búho",
         frog: "una rana",
-        millipede: "un ciempiés",
+        millipede: "un milpiés",
         bat: "un murciélago",
 
         /* Colored Creatures */
@@ -136,12 +148,18 @@ const Messages = {
         black_bat: "un murciélago negro",
         white_bat: "un murciélago blanco",
 
+        /* Room colors*/
+        green: "verde",
+        red: "roja",
+        yellow: "amarilla",
+        blue: "azul",
+
         /* Hints */
         ghost_hint: "Hubi está en una habitación con {0}.",
         door_hint: "Hay una puerta mágica entre una habitación con {0} y una habitación con {1}.",
 
         /* Player Position */
-        player_position: "{0} está en una habitación con {1} más cerca de {2} en la habitación {3}.",
+        player_position: "{0} está en una habitación con {1} cercano a {2} en la habitación {3}.",
 
         /* Ghost */
         ghost_moved: "El fantasma se ha movido.",

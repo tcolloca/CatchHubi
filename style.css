@@ -4,7 +4,8 @@ body {
     background-color: #222;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-start;
+    padding-top: 20px;
     min-height: 100vh;
     font-family: sans-serif;
 }
@@ -523,13 +524,9 @@ Assuming 2x2 grid for animals-row-2:
     z-index: 10;
 }
 
-.compass-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
-}
-
 .compass-btn:active {
     background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
 }
 
 /* Positioning */
@@ -588,8 +585,8 @@ Assuming 2x2 grid for animals-row-2:
 }
 
 .green-rabbit-btn {
-    top: 61%;
-    left: 31%;
+    top: 61.2%;
+    left: 30.5%;
 }
 
 .red-mouse-btn {
@@ -598,7 +595,7 @@ Assuming 2x2 grid for animals-row-2:
 }
 
 .blue-rabbit-btn {
-    top: 81%;
+    top: 81.3%;
     left: 31%;
 }
 
@@ -712,4 +709,50 @@ Assuming 2x2 grid for animals-row-2:
 #play-btn:hover {
     transform: scale(1.1);
     box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
+}
+
+/* Narrator Message Window */
+.narrator-message-container {
+    width: 90%;
+    max-width: 600px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    text-align: center;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin-top: 20px;
+    transition: opacity 0.3s, transform 0.3s;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    min-height: 3em;
+    max-height: 30vh;
+    overflow-y: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.narrator-message-container.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.narrator-message-container .source {
+    font-weight: bold;
+    color: #FFC107;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    display: block;
 }
