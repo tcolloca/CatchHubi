@@ -7,7 +7,6 @@ class Narrator {
     }
 
     async intro() {
-        this._interrupted = false;
         await this._playSequence('music', [
             'intro.m4a',
         ]);
@@ -18,14 +17,12 @@ class Narrator {
     }
 
     async selectPlayers() {
-        this._interrupted = false;
         await this._playSequence('host',
             ['players_selection_intro.m4a'],
             'player_selection_intro');
     }
 
     async addPlayer(playerInfo) {
-        this._interrupted = false;
         await this._playSequence('host', [
             'player_selected_pre.m4a',
             this._playerName(playerInfo),
@@ -34,7 +31,6 @@ class Narrator {
     }
 
     async playerAlreadyInGame(playerInfo) {
-        this._interrupted = false;
         await this._playSequence('host', [
             this._playerName(playerInfo),
             'player_already_in_game.m4a',
@@ -42,21 +38,18 @@ class Narrator {
     }
 
     async bothRabbitAndMouseRequired() {
-        this._interrupted = false;
         await this._playSequence('host', [
             'both_rabbit_and_mouse_required.m4a',
         ], 'both_rabbit_and_mouse_required');
     }
 
     async selectFirstPlayer() {
-        this._interrupted = false;
         await this._playSequence('host', [
             'select_first_player.m4a',
         ], 'select_first_player');
     }
 
     async firstPlayerSelected(playerInfo) {
-        this._interrupted = false;
         await this._playSequence('host', [
             this._playerName(playerInfo),
             'first_player_selected.m4a'
@@ -64,28 +57,25 @@ class Narrator {
     }
 
     async firstPlayerNotSelected() {
-        this._interrupted = false;
         await this._playSequence('host', [
             'first_player_not_selected.m4a',
         ], 'first_player_not_selected');
     }
 
     async firstPlayerMustBeInGame() {
-        this._interrupted = false;
         await this._playSequence('host', [
             'first_player_must_be_in_game.m4a',
         ], 'first_player_must_be_in_game');
     }
 
     async gameStart() {
-        this._interrupted = false;
         await this._playSequence('music', [
             'game_start.m4a',
         ]);
     }
 
     async askWhereTo(creature, playerInfo) {
-        this._interrupted = false;
+        console.log('askWhereTo');
         await this._playSequence('sfx', [`${creature.type}.m4a`]);
         await this._playSequence(creature.type, [
             this._playerName(playerInfo),
@@ -94,14 +84,12 @@ class Narrator {
     }
 
     async invalidMoveDiagonal() {
-        this._interrupted = false;
         await this._playSequence('host', [
             'invalid_mode_diagonal.m4a',
         ], 'invalid_mode_diagonal');
     }
 
     async magicDoorOpened(creature) {
-        this._interrupted = false;
         await this._playSequence('sfx', [
             'open_door.m4a',
         ]);
@@ -111,7 +99,6 @@ class Narrator {
     }
 
     async announceWall(creature, wall) {
-        this._interrupted = false;
         let wallName = `${wall.type}`;
         if (wall.isExternal) {
             wallName = "external_wall";
@@ -124,21 +111,18 @@ class Narrator {
     }
 
     async canPassThrough(creature) {
-        this._interrupted = false;
         await this._playSequence(creature.type, [
             'can_pass_through.m4a',
         ], 'can_pass_through', []);
     }
 
     async cannotPassThrough(creature) {
-        this._interrupted = false;
         await this._playSequence(creature.type, [
             'cannot_pass_through.m4a',
         ], 'cannot_pass_through', []);
     }
 
     async giveHint(creature, hint) {
-        this._interrupted = false;
         if (hint instanceof GhostHint) {
             await this._playSequence(creature.type, [
                 'ghost_hint.m4a',
@@ -155,7 +139,6 @@ class Narrator {
     }
 
     async givePlayerPosition(playerInfo, creature, owl, color) {
-        this._interrupted = false;
         await this._playSequence('host', [
             this._playerName(playerInfo),
             'player_position.m4a',
@@ -170,7 +153,6 @@ class Narrator {
     }
 
     async ghostMoved() {
-        this._interrupted = false;
         await this._playSequence('sfx', [
             'ghost.m4a',
         ]);
@@ -180,14 +162,12 @@ class Narrator {
     }
 
     async bonusMove(creature) {
-        this._interrupted = false;
         await this._playSequence(creature.type, [
             'bonus_move.m4a',
         ], 'bonus_move');
     }
 
     async itsPlayerTurn(playerInfo) {
-        this._interrupted = false;
         await this._playSequence('host', [
             this._playerName(playerInfo),
             'its_player_turn.m4a',
@@ -195,7 +175,6 @@ class Narrator {
     }
 
     async gameWon() {
-        this._interrupted = false;
         await this._playSequence('music', [
             'game_win.m4a',
         ]);
@@ -205,7 +184,6 @@ class Narrator {
     }
 
     async gameOver() {
-        this._interrupted = false;
         await this._playSequence('music', [
             'game_over.m4a',
         ]);
@@ -215,10 +193,13 @@ class Narrator {
     }
 
     async _playSequence(source, filesSequence, labelId = null, args = []) {
-        // TODO: remove
-        if (source === 'sfx' || source === 'music') {
-            return;
+        if (this._messagePromise) {
+            this._waitingForMessage++;
+            await this._messagePromise;
+            this._waitingForMessage--;
         }
+        this._interrupted = false;
+        console.log('resetting interrupted');
         const success = await this.audioManager.playSequence(source, filesSequence);
 
         if (!success && labelId) {
@@ -227,24 +208,8 @@ class Narrator {
     }
 
     async _displayMessage(source, labelId, args) {
-        if (this._messagePromise) {
-            this._waitingForMessage++;
-            await this._messagePromise;
-            this._waitingForMessage--;
-        }
         const container = document.getElementById('narrator-message-container');
         if (!container) return;
-
-        // Wait for previous message to finish its minimum duration
-        if (this._messagePromise) {
-            await this._messagePromise;
-        }
-
-        // // If we were interrupted while waiting, don't show the new message
-        // if (this._interrupted) {
-        //     this._interrupted = false;
-        //     return;
-        // }
 
         let msg = this._getMessage(labelId, args);
         let localizedSource = source ? (this.messages[this.language][source] || this._capitalize(source)) : '';
@@ -275,8 +240,11 @@ class Narrator {
 
     interrupt() {
         let interrupted = false;
+        let waitingForAudios = 0;
         if (this.audioManager.stopAll()) {
+            console.log('audio interrupted');
             interrupted = true;
+            waitingForAudios = this.audioManager.waitingForAudios;
         }
 
         const container = document.getElementById('narrator-message-container');
@@ -299,7 +267,8 @@ class Narrator {
             this._resolveInterruption = null;
         }
         this._messagePromise = null;
-        return interrupted && this._waitingForMessage > 0;
+        console.log(interrupted && (this._waitingForMessage > 0 || waitingForAudios > 0));
+        return interrupted && (this._waitingForMessage > 0 || waitingForAudios > 0);
     }
 
     _getMessage(labelId, args = []) {

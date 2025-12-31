@@ -1,6 +1,7 @@
 class AudioManager {
     constructor() {
         this.currentAudio = null;
+        this.waitingForAudios = 0;
     }
 
     async playFile(source, filename) {
@@ -38,8 +39,14 @@ class AudioManager {
     }
 
     async playSequence(source, filesSequence) {
+        this.interrupted = false;
         for (const file of filesSequence) {
+            this.waitingForAudios++;
             const success = await this.playFile(source, file);
+            this.waitingForAudios--;
+            if (this.interrupted) {
+                return true;
+            }
 
             if (!success) {
                 return false;
@@ -51,10 +58,12 @@ class AudioManager {
 
     stopAll() {
         if (this.currentAudio) {
+            this.interrupted = true;
             this.currentAudio.pause();
+            this.currentAudio.onended();
             this.currentAudio.currentTime = 0;
             this.currentAudio = null;
-            return true;
+            return true && this.waitingForAudios > 0;
         }
         return false;
     }
