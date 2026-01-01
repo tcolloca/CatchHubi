@@ -1,7 +1,7 @@
 class Game {
     constructor(difficulty, narrator) {
         this.difficulty = difficulty;
-        this.board = new Board();
+        this.board = new Board(difficulty);
         this.gameState = new GameState(this, narrator);
         this.narrator = narrator;
         this.players = new Set();

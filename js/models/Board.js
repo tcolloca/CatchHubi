@@ -1,14 +1,14 @@
 class Board {
-    constructor() {
+    constructor(difficulty) {
         // this.grid = []; // 9x9 grid
         this.tiles = [];
         this.horizontalWalls = [];
         this.verticalWalls = [];
         this.magicDoors = [];
-        this.initialize();
+        this.initialize(difficulty);
     }
 
-    initialize() {
+    initialize(difficulty) {
         const top = [[CreatureType.Owl, CreatureType.Millipede, CreatureType.Frog, CreatureType.Owl],
         [CreatureType.Frog, CreatureType.Bat, CreatureType.Bat, CreatureType.Millipede]];
         for (let r = 0; r < 4; r++) {
@@ -40,7 +40,7 @@ class Board {
         }
 
         // Generate Walls
-        WallGenerator.generate(this);
+        WallGenerator.generate(this, difficulty);
     }
 
     // Helper to get wall between two tiles

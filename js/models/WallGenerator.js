@@ -1,8 +1,12 @@
 class WallGenerator {
-    static generate(board) {
+    static generate(board, difficulty) {
         let valid = false;
         let attempts = 0;
         const maxAttempts = 10000;
+
+        let magicDoorCount = 1;
+        if (difficulty === Difficulty.MEDIUM) magicDoorCount = 2;
+        if (difficulty === Difficulty.HARD) magicDoorCount = 3;
 
         while (!valid && attempts < maxAttempts) {
             attempts++;
@@ -23,7 +27,7 @@ class WallGenerator {
             // Build a random spanning tree, find an edge that splits Left from Right.
             const stEdges = this.buildSpanningTree(edges);
 
-            let doorEdge = null;
+            let doorEdges = [];
             let componentA = new Set(); // Rabbits
 
             for (let i = 0; i < stEdges.length; i++) {
@@ -32,38 +36,26 @@ class WallGenerator {
                 const comp = this.getComponent(testEdges, 0); // Start at Rabbit1 (0)
 
                 // Check if this component has Rabbits (0,12) and NO Mice (3,15)
-                // OR has Mice (3,15) and NO Rabbits (0,12) -> Wait, simpler:
-                // If we split the tree, we have A and B. 
-                // We want A to have Rabbits and B to have Mice (or vice versa).
-
-                const hasRabbits = comp.has(0) && comp.has(12);
-                const hasMice = comp.has(3) && comp.has(15);
-
                 // Ideally, we want Separation: Rabbits in A, Mice in B.
                 // So Component A has Rabbits but NO Mice.
-                // Or Component A has Mice but NO Rabbits.
 
+                const hasRabbits = comp.has(0) && comp.has(12);
                 const compHasMice = comp.has(3) || comp.has(15);
-                const compHasRabbits = comp.has(0) || comp.has(12);
 
                 if (hasRabbits && !compHasMice) {
-                    doorEdge = stEdges[i]; // Found cut
-                    componentA = comp;
-                    break;
-                } else if (hasMice && !compHasRabbits) {
-                    doorEdge = stEdges[i]; // Found cut (Mice are in A)
+                    doorEdges.push(stEdges[i]); // Primary cut
                     componentA = comp;
                     break;
                 }
             }
 
-            if (!doorEdge) continue; // Retry
+            if (doorEdges.length === 0) continue; // Retry
 
             // 2. Identify Boundary Edges
             // All edges (tree or not) that cross from A to B
             const boundaryEdges = [];
             for (const edge of edges) {
-                if (edge === doorEdge) continue;
+                if (edge === doorEdges[0]) continue;
                 const u = edge.r1 * 4 + edge.c1;
                 const v = edge.r2 * 4 + edge.c2;
                 if (componentA.has(u) !== componentA.has(v)) {
@@ -72,43 +64,32 @@ class WallGenerator {
             }
 
             // 3. Assign Types
-            // Counts: W:2, R:4, M:4, F:13, D:1
-            let counts = { W: 2, R: 4, M: 4, F: 13, D: 1 };
+            // Base counts for Easy: W:2, R:4, M:4, F:13, D:1
+            // Adjust based on magicDoorCount: 
+            // Medium (2): W:2, R:4, M:4, F:12, D:2
+            // Hard (3): W:2, R:4, M:4, F:11, D:3
+            let counts = { W: 2, R: 4, M: 4, F: 14 - magicDoorCount, D: magicDoorCount };
             const assignments = new Map();
 
-            assignments.set(doorEdge, 'D');
+            assignments.set(doorEdges[0], 'D');
             counts.D--;
 
-            // Fill Boundary with Blocking Walls (W, M for Rabbits, R for Mice)
-            // We want to block passage across boundary.
-            // If u in Rabbits(A) -> R wall allows flow? No R wall blocks Mice.
-            // Wait.
-            // R wall: Rabbits can cross. Mice blocked.
-            // M wall: Mice can cross. Rabbits blocked.
-            // W wall: Nobody crosses.
+            // Retry if we don't have enough boundary edges for extra doors.
+            if (boundaryEdges.length < counts.D) continue;
 
-            // To separate:
-            // We want NOBODY to cross (ideally).
-            // But we only have 2 Ws.
-            // So we must use R or M.
-            // If we use R: Rabbits can cross the boundary (Leak!). Mice blocked.
-            // If we use M: Mice can cross the boundary (Leak!). Rabbits blocked.
-
-            // So we can strictly separate ONE species, but not the other (unless we use W).
-            // Or we alternate?
-
+            // Add extra magic doors from boundary edges
             this.shuffle(boundaryEdges);
+            for (; counts.D > 0; counts.D--) {
+                const extraDoor = boundaryEdges.shift();
+                assignments.set(extraDoor, 'D');
+                doorEdges.push(extraDoor);
+            }
+
+            // Fill Boundary with Blocking Walls (W, M for Rabbits, R for Mice)
             for (const e of boundaryEdges) {
                 if (counts.W > 0) {
                     assignments.set(e, 'W');
                     counts.W--;
-                }
-                // We leave others unassigned for now, to be filled by global fill or specific logic?
-                // Let's try filling them with separation logic if possible.
-                else {
-                    // Try to use M or R to block at least one side?
-                    // But we also need to satisfy connectivity constraints.
-                    // Let's leave them for the global fill which we'll bias.
                 }
             }
 
@@ -123,12 +104,17 @@ class WallGenerator {
             });
 
             for (const e of unassigned) {
-                // Heuristic:
-                // If Boundary Edge (and not W):
-                //   Using R blocks Mice. Using M blocks Rabbits. Using F blocks nothing.
-                //   We prefer blocking.
                 if (boundaryEdges.includes(e)) {
-                    if (counts.M > 0) { assignments.set(e, 'M'); counts.M--; }
+                    if (counts.M > 0 && counts.R > 0) {
+                        const coin = Math.random();
+                        if (coin < 0.5) {
+                            assignments.set(e, 'M');
+                            counts.M--;
+                        } else {
+                            assignments.set(e, 'R');
+                            counts.R--;
+                        }
+                    } else if (counts.M > 0) { assignments.set(e, 'M'); counts.M--; }
                     else if (counts.R > 0) { assignments.set(e, 'R'); counts.R--; }
                     else if (counts.F > 0) { assignments.set(e, 'F'); counts.F--; }
                 } else {
@@ -154,6 +140,7 @@ class WallGenerator {
             if (this.checkConnectivity(assignments, 'rabbit') &&
                 this.checkConnectivity(assignments, 'mouse')) {
                 // Apply
+                board.magicDoors = []; // Clear and re-populate
                 for (const [edge, type] of assignments) {
                     const wall = board.getWallBetween(edge.r1, edge.c1, edge.r2, edge.c2);
                     this.applyTypeToWall(wall, type);
@@ -162,7 +149,7 @@ class WallGenerator {
                     }
                 }
                 valid = true;
-                console.log(`Generated valid board in ${attempts} attempts.`);
+                console.log(`Generated valid board in ${attempts} attempts with ${magicDoorCount} magic doors.`);
             }
         }
 
