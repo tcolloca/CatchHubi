@@ -200,11 +200,14 @@ class Narrator {
     async gameWon() {
         await this.hubiFoundByTwoPlayers();
         await this._playSequence('music', [
-            'game_win.m4a',
+            'game_win_1.m4a',
         ]);
         await this._playSequence('host', [
             'game_won.m4a',
         ], 'game_won');
+        await this._playSequence('music', [
+            'game_win_2.m4a',
+        ]);
     }
 
     async gameOver() {
