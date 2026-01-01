@@ -196,6 +196,30 @@ class Narrator {
         ], 'its_player_turn', [player.name]);
     }
 
+    async sunset() {
+        await this._playSequence('host', [
+            'sunset.m4a',
+        ], 'sunset');
+    }
+
+    async evening() {
+        await this._playSequence('host', [
+            'evening.m4a',
+        ], 'evening');
+    }
+
+    async closeToMidnight() {
+        await this._playSequence('host', [
+            'close_to_midnight.m4a',
+        ], 'close_to_midnight');
+    }
+
+    async midnight() {
+        await this._playSequence('host', [
+            'midnight.m4a',
+        ], 'midnight');
+    }
+
     async gameWon() {
         await this.hubiFoundByTwoPlayers();
         await this._playSequence('music', [

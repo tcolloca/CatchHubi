@@ -85,6 +85,12 @@ const Messages = {
         hubi_found_by_one_player: "Oh, no! You've found me! But you need another player to catch me!",
         hubi_found_by_two_players: "!Oh, no! You've caught me! You can take your food, I've had fun too!",
 
+        /* Timer */
+        sunset: "The sun is setting soon, and it's getting dark...",
+        evening: "The sun has set, and it's dark outside...",
+        close_to_midnight: "It's getting close to midnight!",
+        midnight: "It's midnight!",
+
         /* Game Won */
         game_won: "You've won!",
 
@@ -176,6 +182,12 @@ const Messages = {
         ghost_moved: "Hubi se ha movido a otra habitación, ¡Apúrate para encontrarlo!",
         hubi_found_by_one_player: "¡Oh, no! ¡Me has encontrado! ¡Pero necesitas a alguien mas para atraparme!",
         hubi_found_by_two_players: "¡Oh, no! ¡Me han atrapado! Tomen su comida, me he divertido much igual.",
+
+        /* Timer */
+        sunset: "El sol está por ponerse, y está empezando a oscurecer...",
+        evening: "El sol se ha puesto, y está oscuro afuera...",
+        close_to_midnight: "¡Ya falta poco para la medianoche!",
+        midnight: "¡Es medianoche!",
 
         /* Game Won */
         game_won: "¡Han ganado!",

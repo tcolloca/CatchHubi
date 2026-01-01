@@ -235,6 +235,9 @@ class GameController {
         if (this._onInterruption()) {
             return;
         }
+        if (this.gameState.isOver()) {
+            return;
+        }
         if (!this.gameState.isPlaying()) {
             this.narrator.selectPlayers();
             return;
@@ -264,9 +267,9 @@ class GameController {
         if (this.gameState.isPlaying()) {
             this.compassView.togglePlayerLightOff(this.game.currentPlayer);
             await this.game.giveHint();
-            await this.game.endTurn();
-            this.compassView.togglePlayerLightOn(this.game.currentPlayer);
-            return;
+            if (!this.game.isOver()) {
+                this.compassView.togglePlayerLightOn(this.game.currentPlayer);
+            } return;
         }
     }
 

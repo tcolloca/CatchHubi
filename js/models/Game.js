@@ -2,13 +2,13 @@ class Game {
     constructor(difficulty, narrator) {
         this.difficulty = difficulty;
         this.board = new Board(difficulty);
-        let requiredMagicDoorCount = this._computeRequiredMagicDoorCount(difficulty);
-        this.gameState = new GameState(this, narrator, requiredMagicDoorCount);
+        this.gameState = new GameState(this, narrator, difficulty);
         this.narrator = narrator;
         this.players = new Set();
-        this.ghost = new Ghost(this, narrator);
+        this.ghost = new Ghost(this, narrator, difficulty);
         this.currentPlayer = null;
         this.movesMade = 0;
+        this.totalTurns = 0;
         this.givenHints = new Map();
     }
 
@@ -95,7 +95,6 @@ class Game {
             player.row = newRow;
             player.col = newCol;
 
-            // Check Win Condition
             if (await this.gameState.checkWinCondition()) {
                 return;
             }
@@ -111,6 +110,7 @@ class Game {
             }
         }
 
+
         // Turn Logic
         if (isKnownWall) {
             this.movesMade++;
@@ -119,6 +119,11 @@ class Game {
                 await this.narrator.bonusMove(creature);
                 return;
             }
+        }
+
+        this.totalTurns++;
+        if (await this.gameState.checkGameOverCondition()) {
+            return;
         }
 
         await this.endTurn();
@@ -166,6 +171,12 @@ class Game {
             this.givenHints.set(playerCreature, hint);
         }
         await this.narrator.giveHint(playerCreature, hint);
+
+        this.totalTurns++;
+        if (await this.gameState.checkGameOverCondition()) {
+            return;
+        }
+        await this.endTurn();
     }
 
     async givePlayerPosition(player) {
@@ -196,12 +207,5 @@ class Game {
 
     isOver() {
         return this.gameState.isOver();
-    }
-
-    _computeRequiredMagicDoorCount(difficulty) {
-        if (Constants.MAGIC_DOOR_USE_RANDOM_COUNT) {
-            return Math.floor(Math.random() * Constants.MAGIC_DOOR_MAX_COUNT_BY_DIFFICULTY[difficulty]) + 1;
-        }
-        return Constants.MAGIC_DOOR_MAX_COUNT_BY_DIFFICULTY[difficulty];
     }
 }

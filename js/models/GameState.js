@@ -8,11 +8,11 @@ const GameStates = {
 };
 
 class GameState {
-    constructor(game, narrator, requiredMagicDoorCount) {
+    constructor(game, narrator, difficulty) {
         this.game = game;
         this.narrator = narrator;
         this.currentState = GameStates.NO_STATE;
-        this.requiredMagicDoorCount = requiredMagicDoorCount;
+        this.requiredMagicDoorCount = this._computeRequiredMagicDoorCount(difficulty);
         this.openedMagicDoorCount = 0;
     }
 
@@ -69,6 +69,26 @@ class GameState {
         return false;
     }
 
+    async checkGameOverCondition() {
+        console.log(this.game.totalTurns);
+        const midnightMoves = Constants.MOVES_UNTIL_MIDNIGHT[this.game.difficulty];
+        if (this.game.totalTurns == Math.floor(midnightMoves * Constants.SUNSET_PERCENTAGE)) {
+            await this.narrator.sunset();
+        } else if (this.game.totalTurns == Math.floor(midnightMoves * Constants.EVENING_PERCENTAGE)) {
+            await this.narrator.evening();
+        } else if (this.game.totalTurns == Math.floor(midnightMoves * Constants.CLOSE_TO_MIDNIGHT_PERCENTAGE)) {
+            await this.narrator.closeToMidnight();
+        } else if (this.game.totalTurns == midnightMoves) {
+            await this.narrator.midnight();
+            if (Constants.ALLOW_GAME_OVER[this.game.difficulty]) {
+                await this.narrator.gameOver();
+                this.currentState = GameStates.GAME_OVER;
+                return true;
+            }
+        }
+        return false;
+    }
+
     async _validatePlayers() {
         const players = this.game.players;
 
@@ -108,6 +128,13 @@ class GameState {
     }
 
     isOver() {
-        return this.currentState === GameStates.WON;
+        return this.currentState === GameStates.WON || this.currentState === GameStates.GAME_OVER;
+    }
+
+    _computeRequiredMagicDoorCount(difficulty) {
+        if (Constants.MAGIC_DOOR_USE_RANDOM_COUNT) {
+            return Math.floor(Math.random() * Constants.MAGIC_DOOR_MAX_COUNT_BY_DIFFICULTY[difficulty]) + 1;
+        }
+        return Constants.MAGIC_DOOR_MAX_COUNT_BY_DIFFICULTY[difficulty];
     }
 }

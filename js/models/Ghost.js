@@ -1,11 +1,12 @@
 class Ghost {
-    constructor(game, narrator) {
+    constructor(game, narrator, difficulty) {
         this.game = game;
         this.narrator = narrator;
         this.row = -1;
         this.col = -1;
         this.active = false;
         this.probability = 0.0;
+        this.difficulty = difficulty;
     }
 
     spawn() {
@@ -28,7 +29,7 @@ class Ghost {
             this.row = choice.r;
             this.col = choice.c;
             this.active = true;
-            this.probability = Constants.GHOST_START_PROBABILITY; // Initial probability
+            this.probability = Constants.GHOST_START_PROBABILITY[difficulty]; // Initial probability
             console.log(`Ghost spawned at ${this.row}, ${this.col}`);
         }
     }
@@ -39,13 +40,13 @@ class Ghost {
         // Check probability
         if (Math.random() > this.probability) {
             // Did not move, increase probability for next time
-            this.probability = Math.min(1, this.probability + Constants.GHOST_PROBABILITY_INCREMENT);
+            this.probability = Math.min(1, this.probability + Constants.GHOST_PROBABILITY_INCREMENT[difficulty]);
             console.log(`Ghost did not move. Probability increased to ${this.probability.toFixed(2)}`);
             return false;
         }
 
         // Reset probability after move
-        this.probability = Constants.GHOST_START_PROBABILITY;
+        this.probability = Constants.GHOST_START_PROBABILITY[difficulty];
 
         // Find valid neighbors (all 8 directions)
         const directions = [
