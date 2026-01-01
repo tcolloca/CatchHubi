@@ -78,7 +78,6 @@ class Narrator {
     }
 
     async askWhereTo(creature, playerInfo) {
-        console.log('askWhereTo');
         await this._playSequence('sfx', [`${creature.type}.m4a`]);
         await this._playSequence(creature.type, [
             this._playerName(playerInfo),
@@ -92,14 +91,14 @@ class Narrator {
         ], 'invalid_mode_diagonal');
     }
 
-    async magicDoorOpened(creature, isFirstDoor) {
+    async magicDoorOpened(creature, wakeUpHubi) {
         await this._playSequence('sfx', [
             'open_door.m4a',
         ]);
         await this._playSequence(creature.type, [
             'magic_door_opened.m4a',
         ], 'magic_door_opened');
-        if (isFirstDoor) {
+        if (wakeUpHubi) {
             await this._playSequence('hubi', [
                 'hubi_awake.m4a',
             ], 'hubi_awake');

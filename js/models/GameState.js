@@ -8,10 +8,12 @@ const GameStates = {
 };
 
 class GameState {
-    constructor(game, narrator) {
+    constructor(game, narrator, requiredMagicDoorCount) {
         this.game = game;
         this.narrator = narrator;
         this.currentState = GameStates.NO_STATE;
+        this.requiredMagicDoorCount = requiredMagicDoorCount;
+        this.openedMagicDoorCount = 0;
     }
 
     async init() {
@@ -43,11 +45,13 @@ class GameState {
         if (this.game.getPlayersAt(tiles[0].row, tiles[0].col).length >= 1
             && this.game.getPlayersAt(tiles[1].row, tiles[1].col).length >= 1) {
             door.open();
-            await this.narrator.magicDoorOpened(this.game.board.getCreature(this.game.currentPlayer), !this.isHubiAwake());
-            if (!this.isHubiAwake()) {
+            this.openedMagicDoorCount++;
+            const wasHubiAwake = this.isHubiAwake();
+            if (!this.isHubiAwake() && this.openedMagicDoorCount >= this.requiredMagicDoorCount) {
                 this.currentState = GameStates.PLAYING_WITH_HUBI;
                 await this.game.spawnGhost();
             }
+            await this.narrator.magicDoorOpened(this.game.board.getCreature(this.game.currentPlayer), !wasHubiAwake && this.isHubiAwake());
             return true;
         }
         return false;

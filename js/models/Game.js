@@ -2,7 +2,8 @@ class Game {
     constructor(difficulty, narrator) {
         this.difficulty = difficulty;
         this.board = new Board(difficulty);
-        this.gameState = new GameState(this, narrator);
+        let requiredMagicDoorCount = this._computeRequiredMagicDoorCount(difficulty);
+        this.gameState = new GameState(this, narrator, requiredMagicDoorCount);
         this.narrator = narrator;
         this.players = new Set();
         this.ghost = new Ghost(this, narrator);
@@ -195,5 +196,12 @@ class Game {
 
     isOver() {
         return this.gameState.isOver();
+    }
+
+    _computeRequiredMagicDoorCount(difficulty) {
+        if (Constants.MAGIC_DOOR_USE_RANDOM_COUNT) {
+            return Math.floor(Math.random() * Constants.MAGIC_DOOR_MAX_COUNT_BY_DIFFICULTY[difficulty]) + 1;
+        }
+        return Constants.MAGIC_DOOR_MAX_COUNT_BY_DIFFICULTY[difficulty];
     }
 }
