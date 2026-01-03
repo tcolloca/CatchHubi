@@ -1,4 +1,4 @@
-const WallGenerator = require('./js/models/WallGenerator.js');
+const WallGenerator = require('./ts/models/WallGenerator.js');
 
 // Mock Wall Class
 class Wall {

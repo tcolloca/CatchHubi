@@ -1,0 +1,782 @@
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #222;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+    min-height: 100vh;
+    font-family: sans-serif;
+}
+
+.game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.board {
+    display: grid;
+    grid-template-columns: repeat(9, auto);
+    grid-template-rows: repeat(9, auto);
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    position: relative;
+    /* For overlays if needed */
+}
+
+.board.edit-mode {
+    border: 3px solid #FFC107;
+    /* Visual cue for edit mode */
+}
+
+
+/* Tiles */
+.tile {
+    width: 100px;
+    height: 100px;
+    background-color: #8B4513;
+    /* Brown */
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.tile img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+    border-radius: 10%;
+}
+
+.tile.flipped {
+    transform: rotate(180deg);
+}
+
+/* Corner Colors */
+.tile[data-row="0"][data-col="0"] {
+    background-color: #4CAF50;
+}
+
+/* Green */
+.tile[data-row="0"][data-col="3"] {
+    background-color: #F44336;
+}
+
+/* Red */
+.tile[data-row="3"][data-col="0"] {
+    background-color: #2196F3;
+}
+
+/* Blue */
+.tile[data-row="3"][data-col="3"] {
+    background-color: #FFEB3B;
+}
+
+/* Yellow */
+
+/* Walls */
+.wall {
+    background-color: #555;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    z-index: 5;
+}
+
+/* Hidden Walls (Fog of War) */
+.wall.hidden-wall {
+    background-color: transparent;
+    /* Invisible/Fog */
+    cursor: default;
+    /* Not interactive normally */
+}
+
+/* But if we hover, maybe show a hint if we want? No, pure fog. */
+/* EXCEPT if in Edit Mode or Debug View */
+.wall.hidden-wall.editable {
+    border: 1px dashed #777;
+    cursor: pointer;
+}
+
+
+:root {
+    --wall-thickness: 15px;
+}
+
+.wall.external {
+    background-color: #888;
+    cursor: default;
+    pointer-events: none;
+}
+
+.wall.horizontal {
+    width: 100%;
+    height: var(--wall-thickness);
+}
+
+.wall.vertical {
+    width: var(--wall-thickness);
+    height: 100%;
+}
+
+/* Wall States */
+.wall[data-type="no_wall"] {
+    background-color: transparent;
+}
+
+/* No Wall */
+.wall[data-type="no_wall"]:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.wall[data-type="mouse_hole"] {
+    background-color: #ddd;
+}
+
+/* Mouse */
+.wall[data-type="mouse_hole"]::after {
+    content: '🐭';
+    font-size: 16px;
+}
+
+.wall[data-type="rabbit_window"] {
+    background-color: #ddd;
+}
+
+/* Rabbit */
+.wall[data-type="rabbit_window"]::after {
+    content: '🐰';
+    font-size: 16px;
+}
+
+.wall[data-type="wall"] {
+    background-color: #555;
+}
+
+/* Blocked */
+.wall[data-type="wall"]::after {
+    content: '❌';
+    color: red;
+    font-size: 14px;
+}
+
+.wall[data-type="free_passage"] {
+    background-color: #ddd;
+}
+
+/* Both */
+.wall[data-type="free_passage"]::after {
+    content: '✅';
+    color: green;
+    font-size: 14px;
+}
+
+.wall[data-type="magic_door"] {
+    background-color: #8B4513;
+    border: 1px solid #5d2e0c;
+}
+
+/* Magic Door */
+.wall[data-type="magic_door"]::after {
+    content: '🚪';
+    font-size: 14px;
+}
+
+.wall[data-type="magic_door"].open {
+    background-color: #a0522d;
+}
+
+.wall[data-type="magic_door"].open::after {
+    content: '🚪';
+    opacity: 0.5;
+    transform: perspective(100px) rotateY(-45deg);
+}
+
+/* Corner fillers (intersections) */
+.corner {
+    background-color: #333;
+    width: var(--wall-thickness);
+    height: var(--wall-thickness);
+}
+
+/* 
+Assuming 2x2 grid for animals-row-2:
+1 2
+3 4
+*/
+.sprite-1 {
+    background-position: 0% 0%;
+}
+
+/* Black Frog */
+.sprite-2 {
+    background-position: 100% 0%;
+}
+
+/* White Bat */
+.sprite-3 {
+    background-position: 0% 100%;
+}
+
+/* Black Bat */
+.sprite-4 {
+    background-position: 100% 100%;
+}
+
+/* White Millipede */
+
+/* Player Tokens */
+.player-token {
+    position: absolute;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 18px;
+    border: 2px solid white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    z-index: 10;
+    transition: transform 0.2s;
+}
+
+.player-token:hover {
+    transform: scale(1.2);
+}
+
+.player-token.selected {
+    box-shadow: 0 0 0 3px white, 0 0 0 6px #2196F3;
+    z-index: 20;
+}
+
+/* Player Colors */
+.player-token.green {
+    background-color: #4CAF50;
+}
+
+.player-token.red {
+    background-color: #F44336;
+}
+
+.player-token.blue {
+    background-color: #2196F3;
+}
+
+.player-token.yellow {
+    background-color: #FFEB3B;
+}
+
+/* Player Positioning on Tile */
+.player-token.small {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    border-width: 1px;
+}
+
+.player-token.pos-top-left {
+    top: 5px;
+    left: 5px;
+}
+
+.player-token.pos-top-right {
+    top: 5px;
+    right: 5px;
+}
+
+.player-token.pos-bottom-left {
+    bottom: 5px;
+    left: 5px;
+}
+
+.player-token.pos-bottom-right {
+    bottom: 5px;
+    right: 5px;
+}
+
+/* Selection Screen */
+.selection-screen {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    z-index: 100;
+    max-width: 400px;
+    width: 90%;
+}
+
+.player-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.option-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.option {
+    flex-grow: 1;
+    padding: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.option:hover {
+    background-color: #f5f5f5;
+}
+
+.option.green {
+    border-left: 5px solid #4CAF50;
+}
+
+.option.red {
+    border-left: 5px solid #F44336;
+}
+
+.option.blue {
+    border-left: 5px solid #2196F3;
+}
+
+.option.yellow {
+    border-left: 5px solid #FFEB3B;
+}
+
+.first-select {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.error {
+    color: red;
+    margin-bottom: 15px;
+    font-weight: bold;
+}
+
+#start-btn {
+    padding: 10px 20px;
+    background-color: #2196F3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+#start-btn:hover {
+    background-color: #1976D2;
+}
+
+/* Turn Info */
+.turn-info {
+    margin-bottom: 10px;
+    font-size: 18px;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Message Box */
+.message-box {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 20px;
+    z-index: 1000;
+    min-height: 20px;
+    font-weight: bold;
+}
+
+.ghost-npc {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2em;
+    z-index: 15;
+    pointer-events: none;
+    animation: float 2s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(-50%, -50%);
+    }
+
+    50% {
+        transform: translate(-50%, -60%);
+    }
+
+    100% {
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Debug Panel */
+.debug-panel {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 5px;
+    background: rgba(43, 43, 43, 0.9);
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.debug-btn {
+    background: #444;
+    border: 1px solid #666;
+    color: #eee;
+    font-size: 1.2em;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.debug-btn:hover {
+    background: #555;
+    transform: scale(1.05);
+}
+
+.debug-btn.active {
+    background: #2196F3;
+    border-color: #64B5F6;
+    box-shadow: 0 0 5px #2196F3;
+}
+
+/* Magic Compass View */
+.hidden {
+    display: none !important;
+}
+
+#compass-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.magic-compass-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.magic-compass {
+    position: relative;
+}
+
+.compass-bg {
+    max-height: 80vh;
+    max-width: 100%;
+    display: block;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.compass-btn {
+    position: absolute;
+    cursor: pointer;
+    border-radius: 50%;
+    /* background: rgba(255, 255, 255, 0.2); Debugging: see hitboxes */
+    background: transparent;
+    z-index: 10;
+}
+
+.compass-btn:active {
+    background: rgba(255, 255, 255, 0.5);
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.5);
+}
+
+/* Positioning */
+.help-btn {
+    top: 69%;
+    left: 42.5%;
+    width: 12%;
+    height: 10%;
+    border-radius: 50%;
+    /* Circle */
+}
+
+/* Cardinals - Triangles */
+
+.cardinal-btn {
+    width: 9%;
+    height: 12%;
+    border-radius: 0;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+}
+
+.north-btn {
+    top: 56%;
+    left: 44%;
+    transform: rotate(0deg);
+    /* Up Triangle */
+}
+
+.east-btn {
+    transform: rotate(90deg);
+    left: 60.5%;
+    top: 68.5%;
+    /* Right Triangle */
+}
+
+.south-btn {
+    transform: rotate(180deg);
+    left: 44%;
+    top: 81%;
+    /* Down Triangle */
+}
+
+.west-btn {
+    transform: rotate(270deg);
+    left: 28%;
+    top: 68.5%;
+    /* Left Triangle */
+}
+
+/* Animals - Circles */
+
+.animal-btn {
+    width: 9%;
+    height: 7%;
+    border-radius: 50%;
+}
+
+.green-rabbit-btn {
+    top: 61.2%;
+    left: 30.5%;
+}
+
+.red-mouse-btn {
+    top: 61%;
+    left: 57.5%;
+}
+
+.blue-rabbit-btn {
+    top: 81.3%;
+    left: 31%;
+}
+
+.yellow-mouse-btn {
+    top: 81%;
+    left: 57.5%;
+}
+
+/* Invisible Navigation Button */
+.invisible-nav-btn {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 50px;
+    background: transparent;
+    cursor: default;
+    z-index: 1000;
+}
+
+/* Go Back Button */
+.go-back-btn {
+    margin-top: 10px;
+    padding: 8px 16px;
+    background-color: #f44336;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.go-back-btn:hover {
+    background-color: #d32f2f;
+}
+
+/* Compass Lights */
+.compass-light {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #330000;
+    /* Dark red (off) */
+    box-shadow: inset 0 0 5px #000;
+    transition: all 0.3s;
+    z-index: 20;
+    pointer-events: none;
+}
+
+.compass-light.on {
+    background-color: #ff0000;
+    /* Bright red (on) */
+    box-shadow: 0 0 10px #ff0000, 0 0 20px #ff0000;
+}
+
+/* Positioning Lights - approximate corners based on user request "red light on the corner of the compass" */
+/* I will position them near the animals for clarity */
+
+.light-top-left {
+    top: 57%;
+    left: 24%;
+}
+
+.light-top-right {
+    top: 56.5%;
+    left: 68%;
+}
+
+.light-bottom-left {
+    top: 89%;
+    left: 25%;
+}
+
+.light-bottom-right {
+    top: 89%;
+    left: 68%;
+}
+
+/* Start Popup */
+.start-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    z-index: 2000;
+}
+
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    color: white;
+}
+
+.settings-group label {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: #FFC107;
+}
+
+.settings-group select {
+    padding: 10px 20px;
+    font-size: 1.1em;
+    background: #333;
+    color: white;
+    border: 2px solid #555;
+    border-radius: 8px;
+    cursor: pointer;
+    min-width: 200px;
+}
+
+.settings-group select:hover {
+    border-color: #FFC107;
+}
+
+.settings-group select:focus {
+    outline: none;
+    border-color: #FFC107;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.3);
+}
+
+.start-popup.hidden {
+    display: none;
+}
+
+#play-btn {
+    padding: 20px 40px;
+    font-size: 2em;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.5);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#play-btn:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 30px rgba(76, 175, 80, 0.8);
+}
+
+/* Narrator Message Window */
+.narrator-message-container {
+    width: 90%;
+    max-width: 600px;
+    box-sizing: border-box;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    color: white;
+    padding: 15px 25px;
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    text-align: center;
+    font-size: 0.8em;
+    font-weight: 500;
+    margin-top: 20px;
+    transition: opacity 0.3s, transform 0.3s;
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+    min-height: 3em;
+    max-height: 30vh;
+    overflow-y: auto;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.narrator-message-container.active {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.narrator-message-container .source {
+    font-weight: bold;
+    color: #FFC107;
+    text-transform: uppercase;
+    font-size: 0.85em;
+    margin-bottom: 4px;
+    display: block;
+}
