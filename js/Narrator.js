@@ -4,6 +4,9 @@ class Narrator {
         this.messages = messages;
         this.language = language;
         this._waitingForMessage = 0;
+        this._recordingTurn = false;
+        this._lastTurnHistory = [];
+        this._currentTurnHistory = [];
     }
 
     async intro() {
@@ -243,6 +246,9 @@ class Narrator {
     }
 
     async _playSequence(source, filesSequence, labelId = null, args = []) {
+        if (this._recordingTurn) {
+            this._currentTurnHistory.push({ source, filesSequence, labelId, args });
+        }
         if (this._messagePromise) {
             this._waitingForMessage++;
             await this._messagePromise;
@@ -254,6 +260,25 @@ class Narrator {
         if (!success && labelId) {
             await this._displayMessage(source, labelId, args);
         }
+    }
+
+    startRecordingTurn() {
+        this._recordingTurn = true;
+        this._currentTurnHistory = [];
+    }
+
+    stopRecordingTurn() {
+        this._recordingTurn = false;
+        this._lastTurnHistory = this._currentTurnHistory;
+    }
+
+    async replayLastTurn() {
+        const wasRecording = this._recordingTurn;
+        this._recordingTurn = false; // Prevent recording the replay
+        for (const record of this._lastTurnHistory) {
+            await this._playSequence(record.source, record.filesSequence, record.labelId, record.args);
+        }
+        this._recordingTurn = wasRecording;
     }
 
     async _displayMessage(source, labelId, args) {

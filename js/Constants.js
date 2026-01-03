@@ -31,5 +31,6 @@ const Constants = {
         'easy': false,
         'medium': false,
         'hard': true,
-    }
+    },
+    LONG_PRESS_DURATION: 3000,
 };

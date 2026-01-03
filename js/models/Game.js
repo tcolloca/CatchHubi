@@ -7,6 +7,7 @@ class Game {
         this.players = new Set();
         this.ghost = new Ghost(this, narrator, difficulty);
         this.currentPlayer = null;
+        this.previousPlayer = null;
         this.movesMade = 0;
         this.totalTurns = 0;
         this.givenHints = new Map();
@@ -35,6 +36,7 @@ class Game {
             await this.narrator.firstPlayerMustBeInGame(player);
             return false;
         }
+        this.previousPlayer = this.currentPlayer;
         this.currentPlayer = player;
         await this.narrator.firstPlayerSelected(player);
         return true;
@@ -55,7 +57,7 @@ class Game {
             this.currentPlayer = Player.GREEN_RABBIT;
         }
         if (this.hasPlayer(this.currentPlayer)) {
-            await this.narrator.askWhereTo(this.board.getCreature(this.currentPlayer), this.currentPlayer);
+            await this.startTurn();
         } else {
             await this.moveToNextPlayer();
         }
@@ -200,8 +202,15 @@ class Game {
         await this.narrator.givePlayerPosition(player, creature, owl, color);
     }
 
+    async startTurn() {
+        await this.narrator.startRecordingTurn();
+        await this.narrator.askWhereTo(this.board.getCreature(this.currentPlayer), this.currentPlayer);
+    }
+
     async endTurn() {
         this.movesMade = 0;
+        await this.narrator.stopRecordingTurn();
+        this.previousPlayer = this.currentPlayer;
         await this.moveToNextPlayer();
     }
 

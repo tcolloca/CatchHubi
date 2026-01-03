@@ -36,15 +36,19 @@ class MagicCompassView {
             { id: 'east-btn', type: 'cardinal-btn', label: 'Forest', onClick: this.onEastClick }, // Right
             { id: 'south-btn', type: 'cardinal-btn', label: 'Mountains', onClick: this.onSouthClick }, // Bottom
             { id: 'west-btn', type: 'cardinal-btn', label: 'City', onClick: this.onWestClick },  // Left
-            { id: 'help-btn', type: 'help-btn', label: '?', onClick: this.onHelpClick, onPress: this.onHelpPress } // Center
+            { id: 'help-btn', type: 'help-btn', label: '?', onClick: this.onHelpClick, onLongPress: this.onHelpLongPress } // Center
         ];
 
         buttons.forEach(btn => {
             const b = document.createElement('div');
             b.className = `compass-btn ${btn.type} ${btn.id}`;
             b.title = btn.label;
-            b.onclick = () => btn.onClick && btn.onClick();
-            b.onmousedown = () => btn.onPress && btn.onPress();
+
+            if (btn.onLongPress) {
+                this.setupLongPressHandler(b, () => btn.onClick && btn.onClick(), () => btn.onLongPress && btn.onLongPress());
+            } else {
+                b.onclick = () => btn.onClick && btn.onClick();
+            }
             compassDiv.appendChild(b);
         });
 
@@ -93,8 +97,8 @@ class MagicCompassView {
         this.onHelpClick = handler;
     }
 
-    bindHelpButtonPress(handler) {
-        this.onHelpPress = handler;
+    bindHelpButtonLongPress(handler) {
+        this.onHelpLongPress = handler;
     }
 
     bindBlueRabbitButtonClick(handler) {
@@ -187,5 +191,42 @@ class MagicCompassView {
                 light.classList.remove('on');
             }
         }
+    }
+    setupLongPressHandler(element, onClick, onLongPress) {
+        let timer;
+        let isLongPress = false;
+        const longPressDuration = Constants.LONG_PRESS_DURATION;
+
+        const start = (e) => {
+            if (e.type === 'click' && e.button !== 0) return; // Only left click or touch
+            isLongPress = false;
+            timer = setTimeout(() => {
+                isLongPress = true;
+                if (navigator.vibrate) navigator.vibrate(50); // Optional feedback
+                onLongPress();
+            }, longPressDuration);
+        };
+
+        const cancel = () => {
+            clearTimeout(timer);
+        };
+
+        const click = (e) => {
+            if (isLongPress) {
+                e.preventDefault();
+                e.stopPropagation();
+            } else {
+                onClick();
+            }
+        }
+
+        element.addEventListener('mousedown', start);
+        element.addEventListener('touchstart', start, { passive: true });
+
+        element.addEventListener('mouseup', cancel);
+        element.addEventListener('mouseleave', cancel);
+        element.addEventListener('touchend', cancel);
+
+        element.addEventListener('click', click);
     }
 }

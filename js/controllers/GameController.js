@@ -32,7 +32,8 @@ class GameController {
         this.compassView.bindGreenRabbitButtonClick(() => this._handleGreenRabbitClick());
         this.compassView.bindRedMouseButtonClick(() => this._handleRedMouseClick());
         this.compassView.bindHelpButtonClick(() => this._handleHelpClick());
-        this.compassView.bindHelpButtonPress(() => this._handleHelpPress());
+        this.compassView.bindHelpButtonClick(() => this._handleHelpClick());
+        this.compassView.bindHelpButtonLongPress(() => this._handleHelpLongPress());
 
         // Render board immediately to allow setup, but keep hidden
         this.boardView.render(this.game, this);
@@ -273,7 +274,25 @@ class GameController {
         }
     }
 
-    async _handleHelpPress() {
+    async _handleHelpLongPress() {
+        if (this._onInterruption()) {
+            return;
+        }
+        if (this.gameState.isOver()) {
+            return;
+        }
+        if (!this.gameState.isPlaying()) {
+            this.narrator.selectPlayers();
+            return;
+        }
+        if (!this.game.previousPlayer) {
+            return;
+        }
+        this.compassView.togglePlayerLightOff(this.game.currentPlayer);
+        this.compassView.togglePlayerLightOn(this.game.previousPlayer);
+        await this.narrator.replayLastTurn();
+        this.compassView.togglePlayerLightOff(this.game.previousPlayer);
+        this.compassView.togglePlayerLightOn(this.game.currentPlayer);
     }
 
     _onInterruption() {

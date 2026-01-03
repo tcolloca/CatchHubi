@@ -34,7 +34,7 @@ class GameState {
         if (this.currentState === GameStates.SELECTING_FIRST_PLAYER && await this._validateFirstPlayer()) {
             this.currentState = GameStates.PLAYING_BEFORE_DOOR;
             await this.narrator.gameStart();
-            await this.narrator.askWhereTo(this.game.board.getCreature(this.game.currentPlayer), this.game.currentPlayer);
+            await this.game.startTurn();
             return true;
         }
         return false;
