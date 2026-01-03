@@ -33,4 +33,6 @@ const Constants = {
         'hard': true,
     },
     LONG_PRESS_DURATION: 3000,
+    AVERAGE_WPM: 250,
+    MESSAGE_BUFFER_SECONDS: 1.5,
 };

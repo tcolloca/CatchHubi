@@ -308,7 +308,12 @@ class Narrator {
             if (this._messageTimeout) {
                 clearTimeout(this._messageTimeout);
             }
-            this._messageTimeout = setTimeout(() => clear(resolve), Constants.NARRATOR_MESSAGE_DURATION);
+
+            const wordCount = msg.split(/\s+/).length;
+            const durationSeconds = (wordCount / Constants.AVERAGE_WPM) * 60 + Constants.MESSAGE_BUFFER_SECONDS;
+            const durationMs = durationSeconds * 1000;
+
+            this._messageTimeout = setTimeout(() => clear(resolve), durationMs);
         });
     }
 

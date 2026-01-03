@@ -16,7 +16,7 @@ const Messages = {
 
         /* First Player Selection */
         select_first_player: "Select a player to be the first one.",
-        first_player_selected: "Great! {0} is the going to go first.",
+        first_player_selected: "Great! {0} is going to go first.",
         first_player_not_selected: "Please select a player to be the first one.",
         first_player_must_be_in_game: "The first player must be in the game.",
 
