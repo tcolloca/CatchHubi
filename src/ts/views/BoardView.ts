@@ -218,7 +218,6 @@ export class BoardView {
         container.appendChild(div);
     }
 
-    // TODO: Could controller be of a specific type?
     createWallElement(wall: Wall, controller: GameController, container: HTMLElement) {
         const div = document.createElement('div');
         div.className = `wall ${wall.type}`;
